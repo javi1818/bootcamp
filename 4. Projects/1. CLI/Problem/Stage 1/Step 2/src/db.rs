@@ -1,19 +1,25 @@
 use anyhow::Result;
-
+use std::fs;
 use crate::models::{DBState, Epic, Story, Status};
+use std::collections::HashMap;
+use serde_json;
 
-trait Database {
+pub trait Database {
     fn read_db(&self) -> Result<DBState>;
     fn write_db(&self, db_state: &DBState) -> Result<()>;
 }
 
-struct JSONFileDatabase {
+pub struct JSONFileDatabase {
     pub file_path: String
 }
 
 impl Database for JSONFileDatabase {
     fn read_db(&self) -> Result<DBState> {
-        todo!() // read the content's of self.file_path and deserialize it using serde
+        // read the content's of self.file_path and deserialize it using serde
+        let contents = fs::read_to_string(&self.file_path)?; 
+        let db: DBState = serde_json::from_str(&contents)?;
+
+        Ok(db)
     }
 
     fn write_db(&self, db_state: &DBState) -> Result<()> {
