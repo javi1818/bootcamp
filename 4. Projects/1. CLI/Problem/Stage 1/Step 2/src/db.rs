@@ -23,7 +23,24 @@ impl Database for JSONFileDatabase {
     }
 
     fn write_db(&self, db_state: &DBState) -> Result<()> {
-        todo!() // serialize db_state to json and store it in self.file_path
+        let contents = serde_json::to_string(db_state);
+        match contents {
+            Ok(c) => {
+                println!("writing to: {}", self.file_path);
+                match fs::write(&self.file_path, c) {
+                    Ok(_) => {
+                        return Ok(());
+                    },
+                    Err(_) => {
+                        return Err(anyhow::Error::msg("Something went wrong writing the contents"))
+                    },
+                };
+            },
+            Err(_) => {
+                return Err(anyhow::Error::msg("Something went wrong serializing the DB State"));
+            },
+
+        };
     }
 }
 
